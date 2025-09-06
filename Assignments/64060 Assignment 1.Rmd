@@ -1,0 +1,57 @@
+---
+title: "Assignment 1"
+author: "Melissa Dennis"
+date: "2025-09-06"
+output: html_document
+---
+
+#Load libraries
+```{r}
+install.packages("readxl")
+library(readxl)
+
+install.packages("dplyr")
+library(dplyr)
+
+install.packages("ggplot2")
+library(ggplot2)
+
+install.packages("rmarkdown")
+library(rmarkdown)
+
+```
+
+#1/2 
+#Download and imported dataset 
+#Cereal Excel file used. This was from the data sets in the CSV selection of the class
+```{r}
+DF <- read_excel("C:/Users/m_den/OneDrive/Documents/Cereals.xlsx")
+```
+
+#3
+#Print description statistics
+```{r}
+summary(DF)
+```
+
+#4 
+#Transform one variable
+```{r}
+char_calories <- as.character(DF$calories)
+class(char_calories)
+```
+
+#5
+#Plot one quantitative value
+```{r}
+hist(DF$protein)
+```
+#Plot scatterplot
+```{r}
+plot(DF$fiber,DF$carbo, main = "Fiber/Carbo",
+     xlab = "Fiber", ylab = "Carbo", pch = 19)
+```
+
+
+```
+
