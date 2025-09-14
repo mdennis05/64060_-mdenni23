@@ -2,22 +2,14 @@
 title: "Assignment 1"
 author: "Melissa Dennis"
 date: "2025-09-06"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 #Load libraries
 ```{r}
-install.packages("readxl")
-library(readxl)
-
-install.packages("dplyr")
 library(dplyr)
-
-install.packages("ggplot2")
-library(ggplot2)
-
-install.packages("rmarkdown")
-library(rmarkdown)
 
 ```
 
@@ -25,7 +17,7 @@ library(rmarkdown)
 #Download and imported dataset 
 #Cereal Excel file used. This was from the data sets in the CSV selection of the class
 ```{r}
-DF <- read_excel("C:/Users/m_den/OneDrive/Documents/Cereals.xlsx")
+DF <- read.csv("C:/Users/m_den/OneDrive/Documents/Cereals.csv")
 ```
 
 #3
@@ -44,7 +36,8 @@ class(char_calories)
 #5
 #Plot one quantitative value
 ```{r}
-hist(DF$protein)
+hist(DF$protein,main = "Protein",
+     xlab = "Protein")
 ```
 #Plot scatterplot
 ```{r}
