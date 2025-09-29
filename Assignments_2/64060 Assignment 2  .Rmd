@@ -1,0 +1,303 @@
+---
+title: "64060 Assignment 2"
+author: "Melissa Dennis"
+date: "2025-09-24"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+## Load libraries
+library(caret)
+library(ISLR)
+library(dplyr)
+library(ggplot2)
+library(FNN)
+library(class)
+library(crayon)
+```
+
+```{r}
+## Load dataset
+df <- read.csv("C:/Users/m_den/OneDrive/Documents/UniversalBank.csv")
+```
+
+```{r}
+## Explore dataset
+head(df)
+```
+
+```{r}
+summary(df)
+```
+```{r}
+cat("1. Age = 40, Experience = 10, Income = 84, Family = 2, CCAvg = 2, Education_1 = 0, Education_2 = 1, Education_3 = 0, Mortgage = 0, Securities Account = 0, CD Account = 0, Online = 1, and Credit Card = 1. Perform a k-NN classification with all predictors except ID and ZIP code using k = 1. 
+
+Remember to transform categorical predictors with more than two categories into dummy variables first. Specify the success class as 1 (loan acceptance), and use the default cutoff value of 0.5. 
+
+How would this customer be classified?")
+```
+  
+```{r}
+## Remove Zip.Code and ID Columns and transform data into dummy variables
+
+df_bank <- data.frame(select(df,-c(ZIP.Code,ID)) %>% 
+  mutate(Education_1 = ifelse(Education == 1,1,0),
+         Education_2 = ifelse(Education == 2,1,0),
+         Education_3 = ifelse(Education == 3,1,0)))
+        
+df_bank <- df_bank %>% select(-Education)
+
+```
+
+```{r}
+## Data configuration sets
+set.seed(123)
+
+train.index <- createDataPartition(df$Personal.Loan,p = 0.6, list = FALSE)
+train.df <- df[train.index, ]
+valid.df <- df[-train.index, ]
+train.labels <- train.df$Personal.Loan
+valid.labels <- valid.df$Personal.Loan
+```
+
+```{r}
+## Check dimensions of new data partitions
+
+cat("The first value denotes the row count and the second represents the column count of the partitioned data, validating the accuracy of the 60/40 data split.", "\n", "\n")
+
+cat(bold("Train Data Dimensions:"), dim(train.df), "\n")
+cat(bold("Valid Data Dimensions:"), dim(valid.df), "\n")
+
+```
+```{r}
+## Add new customer information
+
+new.customer <- data.frame(Age = 40, Experience = 10, Income = 84, Family = 2, CCAvg = 2, Education1 = 0, Education2 = 1, Education3 = 0, Mortgage = 0, Securities.Account = 0, CD.Account = 0, Online = 1, CreditCard = 1)
+
+## Confirm new data structure
+
+new.cust.form <- setdiff(names(train.df),names(new.customer))
+new.customer[new.cust.form] <- 0
+
+## Reorder columns
+
+new.customer <- new.customer[,names(train.df)]
+```
+
+```{r}
+## Normalize data
+
+train.norm.df <- train.df
+valid.norm.df <- valid.df
+norm.df <- df
+
+norm.values <- preProcess(train.df[, 1:2], method=c("center", "scale"))
+train.norm.df[, 1:2] <- predict(norm.values, train.df[, 1:2])
+valid.norm.df[, 1:2] <- predict(norm.values, valid.df[, 1:2])
+norm.df[, 1:2] <- predict(norm.values, df[, 1:2])
+new.norm.df <- predict(norm.values, new.customer)
+```
+
+```{r}
+## Use k-NN
+
+k <- 1
+
+cat("Utilizing 1 for the k value, the prediction output of '0' suggests the customer will not accept the loan","\n", "\n")
+
+nn <- knn(train = train.norm.df[,-10], test = new.norm.df[,-10],
+cl = train.norm.df[, 10], k = k)
+
+##nn.new.cust.pred <- knn(train = train.df[,-10],test = new.cust.df, cl = train.df[,10], k=k, prob=TRUE
+
+nn
+
+```
+```{r}
+cat(bold("Validation Data", "\n", "\n"))
+
+k.conf.matrix <- knn(train = train.norm.df[,-10], test = valid.norm.df[,-10], cl = train.norm.df[,10], k = k, prob = TRUE)
+confusionMatrix(k.conf.matrix, as.factor(valid.norm.df[,10]))
+```
+
+
+```{r}
+cat("2. What is a choice of k that balances between overfitting and ignoring the predictor
+information?")
+```
+```{r}
+# initialize a data frame with two columns: k, and accuracy.
+accuracy.df <- data.frame(k = seq(1, 14, 1), accuracy = rep(0, 14))
+
+# compute accuracy
+
+for(i in 1:14){
+knn.pred <- knn(train = train.norm.df[, -10], test = valid.norm.df[, -10],
+cl = train.norm.df[, 10], k = i, prob = TRUE)
+accuracy.df[i, 2] <- confusionMatrix(knn.pred, as.factor(valid.norm.df[, 10]))$overall[1]
+}
+
+accuracy.df
+```
+
+```{r}
+cat("Using the training data to classify the records in the validation date to calculate the error rates for various choises of k, we have determined '6' is the best value for k.", "\n", "\n")
+
+best.k <- 6
+```
+```{r}
+cat("3. Show the confusion matrix for the validation data that results from using the best k.")
+```
+```{r}
+## Rerun with best.k
+
+cat(bold("Best Fit Validation Data", "\n", "\n"))
+
+best.conf.matrix <- knn(train = train.norm.df[,-10], test = valid.norm.df[,-10], cl = train.norm.df[,10], k = best.k, prob = TRUE)
+confusionMatrix(best.conf.matrix, as.factor(valid.norm.df[,10]))
+```
+```{r}
+
+## Re-run accuracy with best k
+
+cat("Selecting 9 as the best k value gives us a prediction accuracy of 89.35%","\n", "\n")
+
+conf.matrix <- table(Predicted = knn.pred, Actual = valid.labels)
+
+best.accuracy <- sum(diag(conf.matrix))/sum(conf.matrix)
+
+best.accuracy
+
+```
+```{r}
+cat("4. Consider the following customer: Age = 40, Experience = 10, Income = 84,
+Family = 2, CCAvg = 2, Education_1 = 0, Education_2 = 1, Education_3 = 0,
+Mortgage = 0, Securities Account = 0, CD Account = 0, Online = 1 and Credit
+Card = 1. Classify the customer using the best k.")
+```
+```{r}
+## Classify new customer with best k
+
+new.cust.df <- data.frame(Age = 40, Experience = 10, Income = 84, Family = 2, CCAvg = 2, Education_1 = 0, Education_2 = 1, Education_3 = 0, Mortgage = 0, Securities.Account = 0, CD.Account = 0, Online = 1, CreditCard = 1)
+
+nn.new.cust.pred <- knn(train = train.df[,-10],test = new.cust.df, cl = train.df[,10], k=9, prob = TRUE)
+
+
+cat("Even with the most effective k value, the prediction output of '0' suggests the customer will not accept the loan with an accuracy of 92.86%","\n", "\n")
+
+nn.new.cust.pred
+
+```
+```{r}
+cat("5. Repartition the data, this time into training, validation, and test sets (50% : 30% : 20%). Apply the k-NN method with the k chosen above. Compare the confusion matrix of the test set
+with that of the training and validation sets. Comment on the differences and their reason.")
+```
+
+```{r}
+
+set.seed(123)
+
+## Set training data to 50%
+train.index50 <- createDataPartition(df$Personal.Loan,p = 0.5, list = FALSE)
+train.df50 <- df[train.index, ]
+temp.df <- df[-train.index50, ]
+
+## Set validation data to 30%
+
+valid.index30 <- createDataPartition(temp.df$Personal.Loan,p = 0.6, list = FALSE)
+valid.df30 <- df[valid.index30, ]
+test.df20 <- df[-valid.index30, ]
+
+## Check dimensions of new data partitions
+
+cat("The first value denotes the row count and the second represents the column count of the partitioned data, validating the accuracy of the 50/30/20 data split.", "\n", "\n")
+
+cat(bold("Train Data Dimensions:"), dim(train.df50), "\n")
+cat(bold("Valid Data Dimensions:"), dim(valid.df30), "\n")
+cat(bold("Test Data Dimensions:"), dim(test.df20))
+
+```
+
+```{r} 
+## Train kNN 
+
+train.labels50 <- train.df50$Personal.Loan
+valid.labels30 <- valid.df30$Personal.Loan
+test.labels20 <- test.df20$Personal.Loan
+
+## Normalize data
+
+train.norm.df50 <- train.df50
+valid.norm.df30 <- valid.df30
+test.norm.df20 <- test.df20
+norm.df <- df
+
+norm.values2 <- preProcess(train.df50[, 1:2], method=c("center", "scale"))
+train.norm.df50[, 1:2] <- predict(norm.values2, train.df50[, 1:2])
+valid.norm.df30[, 1:2] <- predict(norm.values2, valid.df30[, 1:2])
+test.norm.df20[, 1:2] <- predict(norm.values2, test.df20[, 1:2])
+norm.df[, 1:2] <- predict(norm.values2, df[, 1:2])
+
+## kNN on train data
+
+nn.train50 <- knn(train = train.norm.df50[,-10], test = train.norm.df50[,-10], cl = train.norm.df50[, 10], k = 9)
+
+cat(bold("Train Data:"), "\n", "\n") ##data title
+
+conf.matrix.train50 <- knn(train = train.norm.df50[,-10], test = train.norm.df50[,-10], cl = train.norm.df50[,10], k = 9, prob = TRUE)
+confusionMatrix(conf.matrix.train50, as.factor(train.norm.df50[,10]))
+
+## kNN on validation data
+
+nn.valid30 <- knn(train = train.norm.df50[,-10], test = valid.norm.df30[,-10],
+cl = train.norm.df50[, 10], k = 9)
+
+cat(bold("Validation Data:"), "\n", "\n") ##data title
+
+conf.matrix.valid30 <- knn(train = train.norm.df50[,-10], test = valid.norm.df30[,-10], cl = train.norm.df50[,10], k = best.k, prob = TRUE)
+confusionMatrix(conf.matrix.valid30, as.factor(valid.norm.df30[,10]))
+
+## kNN on test data
+
+nn.test20 <- knn(train = train.norm.df50[,-10], test = test.norm.df20[,-10], cl = train.norm.df50[, 10], k = best.k)
+
+
+conf.matrix.test20 <- knn(train = train.norm.df50[,-10], test = test.norm.df20[,-10], cl = train.norm.df50[,10], k = best.k, prob = TRUE)
+
+cat(bold("Test Data:"), "\n", "\n") ##data title
+
+confusionMatrix(conf.matrix.test20, as.factor(test.norm.df20[,10]))
+
+``` 
+```{r}
+## Calculate train accuracy
+
+cat("The train data accuracy is the highest. This is expected since the model was trained on this data. However, the validation and test accuracies are only slightly lower. This small difference suggests that the model is generalizing well and not overfitting or underfitting the data.", "\n", "\n")
+
+conf.matrix.train50 <- table(Predicted = nn.train50, Actual = train.labels50)
+conf.matrix.valid30 <- table(Predicted = nn.valid30, Actual = valid.labels30)
+conf.matrix.test20 <- table(Predicted = nn.test20, Actual = test.labels20)
+
+train.accuracy50 <- sprintf("%.1f%%", sum(diag(conf.matrix.train50))/sum(conf.matrix.train50)*100)
+
+cat(bold("Train Accuracy:"), train.accuracy50, "\n")
+
+## Calculate valid accuracy
+
+valid.accuracy30 <- sprintf("%.1f%%", sum(diag(conf.matrix.valid30))/sum(conf.matrix.valid30)*100)
+
+cat( bold("Valid Accuracy:"), valid.accuracy30, "\n")
+
+## Calculate test accuracy
+
+test.accuracy20 <- sprintf("%.1f%%",sum(diag(conf.matrix.test20))/sum(conf.matrix.test20)*100)
+
+cat(bold("Test Accuracy:"), test.accuracy20, "\n")
+```
+

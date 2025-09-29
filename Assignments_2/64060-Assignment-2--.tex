@@ -1,0 +1,983 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={64060 Assignment 2},
+  pdfauthor={Melissa Dennis},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{64060 Assignment 2}
+\author{Melissa Dennis}
+\date{2025-09-24}
+
+\begin{document}
+\maketitle
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Load libraries}
+\FunctionTok{library}\NormalTok{(caret)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'caret' was built under R version 4.3.3
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: ggplot2
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: lattice
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ISLR)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'ISLR' was built under R version 4.3.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'dplyr' was built under R version 4.3.3
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{library}\NormalTok{(FNN)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'FNN' was built under R version 4.3.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(class)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'class' was built under R version 4.3.3
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'class'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:FNN':
+## 
+##     knn, knn.cv
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(crayon)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'crayon' was built under R version 4.3.3
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'crayon'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:ggplot2':
+## 
+##     %+%
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Load dataset}
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"C:/Users/m\_den/OneDrive/Documents/UniversalBank.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Explore dataset}
+\FunctionTok{head}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   ID Age Experience Income ZIP.Code Family CCAvg Education Mortgage
+## 1  1  25          1     49    91107      4   1.6         1        0
+## 2  2  45         19     34    90089      3   1.5         1        0
+## 3  3  39         15     11    94720      1   1.0         1        0
+## 4  4  35          9    100    94112      1   2.7         2        0
+## 5  5  35          8     45    91330      4   1.0         2        0
+## 6  6  37         13     29    92121      4   0.4         2      155
+##   Personal.Loan Securities.Account CD.Account Online CreditCard
+## 1             0                  1          0      0          0
+## 2             0                  1          0      0          0
+## 3             0                  0          0      0          0
+## 4             0                  0          0      0          0
+## 5             0                  0          0      0          1
+## 6             0                  0          0      1          0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        ID            Age          Experience       Income          ZIP.Code    
+##  Min.   :   1   Min.   :23.00   Min.   :-3.0   Min.   :  8.00   Min.   : 9307  
+##  1st Qu.:1251   1st Qu.:35.00   1st Qu.:10.0   1st Qu.: 39.00   1st Qu.:91911  
+##  Median :2500   Median :45.00   Median :20.0   Median : 64.00   Median :93437  
+##  Mean   :2500   Mean   :45.34   Mean   :20.1   Mean   : 73.77   Mean   :93153  
+##  3rd Qu.:3750   3rd Qu.:55.00   3rd Qu.:30.0   3rd Qu.: 98.00   3rd Qu.:94608  
+##  Max.   :5000   Max.   :67.00   Max.   :43.0   Max.   :224.00   Max.   :96651  
+##      Family          CCAvg          Education        Mortgage    
+##  Min.   :1.000   Min.   : 0.000   Min.   :1.000   Min.   :  0.0  
+##  1st Qu.:1.000   1st Qu.: 0.700   1st Qu.:1.000   1st Qu.:  0.0  
+##  Median :2.000   Median : 1.500   Median :2.000   Median :  0.0  
+##  Mean   :2.396   Mean   : 1.938   Mean   :1.881   Mean   : 56.5  
+##  3rd Qu.:3.000   3rd Qu.: 2.500   3rd Qu.:3.000   3rd Qu.:101.0  
+##  Max.   :4.000   Max.   :10.000   Max.   :3.000   Max.   :635.0  
+##  Personal.Loan   Securities.Account   CD.Account         Online      
+##  Min.   :0.000   Min.   :0.0000     Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:0.000   1st Qu.:0.0000     1st Qu.:0.0000   1st Qu.:0.0000  
+##  Median :0.000   Median :0.0000     Median :0.0000   Median :1.0000  
+##  Mean   :0.096   Mean   :0.1044     Mean   :0.0604   Mean   :0.5968  
+##  3rd Qu.:0.000   3rd Qu.:0.0000     3rd Qu.:0.0000   3rd Qu.:1.0000  
+##  Max.   :1.000   Max.   :1.0000     Max.   :1.0000   Max.   :1.0000  
+##    CreditCard   
+##  Min.   :0.000  
+##  1st Qu.:0.000  
+##  Median :0.000  
+##  Mean   :0.294  
+##  3rd Qu.:1.000  
+##  Max.   :1.000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"1. Age = 40, Experience = 10, Income = 84, Family = 2, CCAvg = 2, Education\_1 = 0, Education\_2 = 1, Education\_3 = 0, Mortgage = 0, Securities Account = 0, CD Account = 0, Online = 1, and Credit Card = 1. Perform a k{-}NN classification with all predictors except ID and ZIP code using k = 1. }
+
+\StringTok{Remember to transform categorical predictors with more than two categories into dummy variables first. Specify the success class as 1 (loan acceptance), and use the default cutoff value of 0.5. }
+
+\StringTok{How would this customer be classified?"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 1. Age = 40, Experience = 10, Income = 84, Family = 2, CCAvg = 2, Education_1 = 0, Education_2 = 1, Education_3 = 0, Mortgage = 0, Securities Account = 0, CD Account = 0, Online = 1, and Credit Card = 1. Perform a k-NN classification with all predictors except ID and ZIP code using k = 1. 
+## 
+## Remember to transform categorical predictors with more than two categories into dummy variables first. Specify the success class as 1 (loan acceptance), and use the default cutoff value of 0.5. 
+## 
+## How would this customer be classified?
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Remove Zip.Code and ID Columns and transform data into dummy variables}
+
+\NormalTok{df\_bank }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\FunctionTok{select}\NormalTok{(df,}\SpecialCharTok{{-}}\FunctionTok{c}\NormalTok{(ZIP.Code,ID)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Education\_1 =} \FunctionTok{ifelse}\NormalTok{(Education }\SpecialCharTok{==} \DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{),}
+         \AttributeTok{Education\_2 =} \FunctionTok{ifelse}\NormalTok{(Education }\SpecialCharTok{==} \DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{),}
+         \AttributeTok{Education\_3 =} \FunctionTok{ifelse}\NormalTok{(Education }\SpecialCharTok{==} \DecValTok{3}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)))}
+        
+\NormalTok{df\_bank }\OtherTok{\textless{}{-}}\NormalTok{ df\_bank }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{Education)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Data configuration sets}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+
+\NormalTok{train.index }\OtherTok{\textless{}{-}} \FunctionTok{createDataPartition}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{Personal.Loan,}\AttributeTok{p =} \FloatTok{0.6}\NormalTok{, }\AttributeTok{list =} \ConstantTok{FALSE}\NormalTok{)}
+\NormalTok{train.df }\OtherTok{\textless{}{-}}\NormalTok{ df[train.index, ]}
+\NormalTok{valid.df }\OtherTok{\textless{}{-}}\NormalTok{ df[}\SpecialCharTok{{-}}\NormalTok{train.index, ]}
+\NormalTok{train.labels }\OtherTok{\textless{}{-}}\NormalTok{ train.df}\SpecialCharTok{$}\NormalTok{Personal.Loan}
+\NormalTok{valid.labels }\OtherTok{\textless{}{-}}\NormalTok{ valid.df}\SpecialCharTok{$}\NormalTok{Personal.Loan}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Check dimensions of new data partitions}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"The first value denotes the row count and the second represents the column count of the partitioned data, validating the accuracy of the 60/40 data split."}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The first value denotes the row count and the second represents the column count of the partitioned data, validating the accuracy of the 60/40 data split. 
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{bold}\NormalTok{(}\StringTok{"Train Data Dimensions:"}\NormalTok{), }\FunctionTok{dim}\NormalTok{(train.df), }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Train Data Dimensions: 3000 14
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{bold}\NormalTok{(}\StringTok{"Valid Data Dimensions:"}\NormalTok{), }\FunctionTok{dim}\NormalTok{(valid.df), }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Valid Data Dimensions: 2000 14
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Add new customer information}
+
+\NormalTok{new.customer }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{Age =} \DecValTok{40}\NormalTok{, }\AttributeTok{Experience =} \DecValTok{10}\NormalTok{, }\AttributeTok{Income =} \DecValTok{84}\NormalTok{, }\AttributeTok{Family =} \DecValTok{2}\NormalTok{, }\AttributeTok{CCAvg =} \DecValTok{2}\NormalTok{, }\AttributeTok{Education1 =} \DecValTok{0}\NormalTok{, }\AttributeTok{Education2 =} \DecValTok{1}\NormalTok{, }\AttributeTok{Education3 =} \DecValTok{0}\NormalTok{, }\AttributeTok{Mortgage =} \DecValTok{0}\NormalTok{, }\AttributeTok{Securities.Account =} \DecValTok{0}\NormalTok{, }\AttributeTok{CD.Account =} \DecValTok{0}\NormalTok{, }\AttributeTok{Online =} \DecValTok{1}\NormalTok{, }\AttributeTok{CreditCard =} \DecValTok{1}\NormalTok{)}
+
+\DocumentationTok{\#\# Confirm new data structure}
+
+\NormalTok{new.cust.form }\OtherTok{\textless{}{-}} \FunctionTok{setdiff}\NormalTok{(}\FunctionTok{names}\NormalTok{(train.df),}\FunctionTok{names}\NormalTok{(new.customer))}
+\NormalTok{new.customer[new.cust.form] }\OtherTok{\textless{}{-}} \DecValTok{0}
+
+\DocumentationTok{\#\# Reorder columns}
+
+\NormalTok{new.customer }\OtherTok{\textless{}{-}}\NormalTok{ new.customer[,}\FunctionTok{names}\NormalTok{(train.df)]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Normalize data}
+
+\NormalTok{train.norm.df }\OtherTok{\textless{}{-}}\NormalTok{ train.df}
+\NormalTok{valid.norm.df }\OtherTok{\textless{}{-}}\NormalTok{ valid.df}
+\NormalTok{norm.df }\OtherTok{\textless{}{-}}\NormalTok{ df}
+
+\NormalTok{norm.values }\OtherTok{\textless{}{-}} \FunctionTok{preProcess}\NormalTok{(train.df[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{], }\AttributeTok{method=}\FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{))}
+\NormalTok{train.norm.df[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(norm.values, train.df[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{])}
+\NormalTok{valid.norm.df[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(norm.values, valid.df[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{])}
+\NormalTok{norm.df[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(norm.values, df[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{])}
+\NormalTok{new.norm.df }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(norm.values, new.customer)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Use k{-}NN}
+
+\NormalTok{k }\OtherTok{\textless{}{-}} \DecValTok{1}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Utilizing 1 for the k value, the prediction output of \textquotesingle{}0\textquotesingle{} suggests the customer will not accept the loan"}\NormalTok{,}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Utilizing 1 for the k value, the prediction output of '0' suggests the customer will not accept the loan 
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nn }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}\AttributeTok{train =}\NormalTok{ train.norm.df[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{test =}\NormalTok{ new.norm.df[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{],}
+\AttributeTok{cl =}\NormalTok{ train.norm.df[, }\DecValTok{10}\NormalTok{], }\AttributeTok{k =}\NormalTok{ k)}
+
+\DocumentationTok{\#\#nn.new.cust.pred \textless{}{-} knn(train = train.df[,{-}10],test = new.cust.df, cl = train.df[,10], k=k, prob=TRUE}
+
+\NormalTok{nn}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+## Levels: 0 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{bold}\NormalTok{(}\StringTok{"Validation Data"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Validation Data 
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{k.conf.matrix }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}\AttributeTok{train =}\NormalTok{ train.norm.df[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{test =}\NormalTok{ valid.norm.df[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{cl =}\NormalTok{ train.norm.df[,}\DecValTok{10}\NormalTok{], }\AttributeTok{k =}\NormalTok{ k, }\AttributeTok{prob =} \ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{confusionMatrix}\NormalTok{(k.conf.matrix, }\FunctionTok{as.factor}\NormalTok{(valid.norm.df[,}\DecValTok{10}\NormalTok{]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    0    1
+##          0 1692  137
+##          1  106   65
+##                                           
+##                Accuracy : 0.8785          
+##                  95% CI : (0.8634, 0.8925)
+##     No Information Rate : 0.899           
+##     P-Value [Acc > NIR] : 0.99866         
+##                                           
+##                   Kappa : 0.282           
+##                                           
+##  Mcnemar's Test P-Value : 0.05429         
+##                                           
+##             Sensitivity : 0.9410          
+##             Specificity : 0.3218          
+##          Pos Pred Value : 0.9251          
+##          Neg Pred Value : 0.3801          
+##              Prevalence : 0.8990          
+##          Detection Rate : 0.8460          
+##    Detection Prevalence : 0.9145          
+##       Balanced Accuracy : 0.6314          
+##                                           
+##        'Positive' Class : 0               
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"2. What is a choice of k that balances between overfitting and ignoring the predictor}
+\StringTok{information?"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 2. What is a choice of k that balances between overfitting and ignoring the predictor
+## information?
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# initialize a data frame with two columns: k, and accuracy.}
+\NormalTok{accuracy.df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{k =} \FunctionTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{accuracy =} \FunctionTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{14}\NormalTok{))}
+
+\CommentTok{\# compute accuracy}
+
+\ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{14}\NormalTok{)\{}
+\NormalTok{knn.pred }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}\AttributeTok{train =}\NormalTok{ train.norm.df[, }\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{test =}\NormalTok{ valid.norm.df[, }\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{],}
+\AttributeTok{cl =}\NormalTok{ train.norm.df[, }\DecValTok{10}\NormalTok{], }\AttributeTok{k =}\NormalTok{ i, }\AttributeTok{prob =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{accuracy.df[i, }\DecValTok{2}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{confusionMatrix}\NormalTok{(knn.pred, }\FunctionTok{as.factor}\NormalTok{(valid.norm.df[, }\DecValTok{10}\NormalTok{]))}\SpecialCharTok{$}\NormalTok{overall[}\DecValTok{1}\NormalTok{]}
+\NormalTok{\}}
+
+\NormalTok{accuracy.df}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     k accuracy
+## 1   1   0.8785
+## 2   2   0.8745
+## 3   3   0.8845
+## 4   4   0.8880
+## 5   5   0.8895
+## 6   6   0.8945
+## 7   7   0.8915
+## 8   8   0.8915
+## 9   9   0.8935
+## 10 10   0.8950
+## 11 11   0.8960
+## 12 12   0.8970
+## 13 13   0.8960
+## 14 14   0.8985
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Using the training data to classify the records in the validation date to calculate the error rates for various choises of k, we have determined \textquotesingle{}6\textquotesingle{} is the best value for k."}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Using the training data to classify the records in the validation date to calculate the error rates for various choises of k, we have determined '6' is the best value for k. 
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{best.k }\OtherTok{\textless{}{-}} \DecValTok{6}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"3. Show the confusion matrix for the validation data that results from using the best k."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 3. Show the confusion matrix for the validation data that results from using the best k.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Rerun with best.k}
+
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{bold}\NormalTok{(}\StringTok{"Best Fit Validation Data"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Best Fit Validation Data 
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{best.conf.matrix }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}\AttributeTok{train =}\NormalTok{ train.norm.df[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{test =}\NormalTok{ valid.norm.df[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{cl =}\NormalTok{ train.norm.df[,}\DecValTok{10}\NormalTok{], }\AttributeTok{k =}\NormalTok{ best.k, }\AttributeTok{prob =} \ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{confusionMatrix}\NormalTok{(best.conf.matrix, }\FunctionTok{as.factor}\NormalTok{(valid.norm.df[,}\DecValTok{10}\NormalTok{]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    0    1
+##          0 1744  159
+##          1   54   43
+##                                           
+##                Accuracy : 0.8935          
+##                  95% CI : (0.8791, 0.9067)
+##     No Information Rate : 0.899           
+##     P-Value [Acc > NIR] : 0.804           
+##                                           
+##                   Kappa : 0.2377          
+##                                           
+##  Mcnemar's Test P-Value : 1.034e-12       
+##                                           
+##             Sensitivity : 0.9700          
+##             Specificity : 0.2129          
+##          Pos Pred Value : 0.9164          
+##          Neg Pred Value : 0.4433          
+##              Prevalence : 0.8990          
+##          Detection Rate : 0.8720          
+##    Detection Prevalence : 0.9515          
+##       Balanced Accuracy : 0.5914          
+##                                           
+##        'Positive' Class : 0               
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Re{-}run accuracy with best k}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Selecting 9 as the best k value gives us a prediction accuracy of 89.35\%"}\NormalTok{,}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Selecting 9 as the best k value gives us a prediction accuracy of 89.35% 
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{conf.matrix }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{Predicted =}\NormalTok{ knn.pred, }\AttributeTok{Actual =}\NormalTok{ valid.labels)}
+
+\NormalTok{best.accuracy }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(}\FunctionTok{diag}\NormalTok{(conf.matrix))}\SpecialCharTok{/}\FunctionTok{sum}\NormalTok{(conf.matrix)}
+
+\NormalTok{best.accuracy}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.8985
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"4. Consider the following customer: Age = 40, Experience = 10, Income = 84,}
+\StringTok{Family = 2, CCAvg = 2, Education\_1 = 0, Education\_2 = 1, Education\_3 = 0,}
+\StringTok{Mortgage = 0, Securities Account = 0, CD Account = 0, Online = 1 and Credit}
+\StringTok{Card = 1. Classify the customer using the best k."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 4. Consider the following customer: Age = 40, Experience = 10, Income = 84,
+## Family = 2, CCAvg = 2, Education_1 = 0, Education_2 = 1, Education_3 = 0,
+## Mortgage = 0, Securities Account = 0, CD Account = 0, Online = 1 and Credit
+## Card = 1. Classify the customer using the best k.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Classify new customer with best k}
+
+\NormalTok{new.cust.df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{Age =} \DecValTok{40}\NormalTok{, }\AttributeTok{Experience =} \DecValTok{10}\NormalTok{, }\AttributeTok{Income =} \DecValTok{84}\NormalTok{, }\AttributeTok{Family =} \DecValTok{2}\NormalTok{, }\AttributeTok{CCAvg =} \DecValTok{2}\NormalTok{, }\AttributeTok{Education\_1 =} \DecValTok{0}\NormalTok{, }\AttributeTok{Education\_2 =} \DecValTok{1}\NormalTok{, }\AttributeTok{Education\_3 =} \DecValTok{0}\NormalTok{, }\AttributeTok{Mortgage =} \DecValTok{0}\NormalTok{, }\AttributeTok{Securities.Account =} \DecValTok{0}\NormalTok{, }\AttributeTok{CD.Account =} \DecValTok{0}\NormalTok{, }\AttributeTok{Online =} \DecValTok{1}\NormalTok{, }\AttributeTok{CreditCard =} \DecValTok{1}\NormalTok{)}
+
+\NormalTok{nn.new.cust.pred }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}\AttributeTok{train =}\NormalTok{ train.df[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{],}\AttributeTok{test =}\NormalTok{ new.cust.df, }\AttributeTok{cl =}\NormalTok{ train.df[,}\DecValTok{10}\NormalTok{], }\AttributeTok{k=}\DecValTok{9}\NormalTok{, }\AttributeTok{prob =} \ConstantTok{TRUE}\NormalTok{)}
+
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Even with the most effective k value, the prediction output of \textquotesingle{}0\textquotesingle{} suggests the customer will not accept the loan with an accuracy of 92.86\%"}\NormalTok{,}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Even with the most effective k value, the prediction output of '0' suggests the customer will not accept the loan with an accuracy of 92.86% 
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nn.new.cust.pred}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+## attr(,"prob")
+## [1] 0.9285714
+## Levels: 0 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"5. Repartition the data, this time into training, validation, and test sets (50\% : 30\% : 20\%). Apply the k{-}NN method with the k chosen above. Compare the confusion matrix of the test set}
+\StringTok{with that of the training and validation sets. Comment on the differences and their reason."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 5. Repartition the data, this time into training, validation, and test sets (50% : 30% : 20%). Apply the k-NN method with the k chosen above. Compare the confusion matrix of the test set
+## with that of the training and validation sets. Comment on the differences and their reason.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+
+\DocumentationTok{\#\# Set training data to 50\%}
+\NormalTok{train.index50 }\OtherTok{\textless{}{-}} \FunctionTok{createDataPartition}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{Personal.Loan,}\AttributeTok{p =} \FloatTok{0.5}\NormalTok{, }\AttributeTok{list =} \ConstantTok{FALSE}\NormalTok{)}
+\NormalTok{train.df50 }\OtherTok{\textless{}{-}}\NormalTok{ df[train.index, ]}
+\NormalTok{temp.df }\OtherTok{\textless{}{-}}\NormalTok{ df[}\SpecialCharTok{{-}}\NormalTok{train.index50, ]}
+
+\DocumentationTok{\#\# Set validation data to 30\%}
+
+\NormalTok{valid.index30 }\OtherTok{\textless{}{-}} \FunctionTok{createDataPartition}\NormalTok{(temp.df}\SpecialCharTok{$}\NormalTok{Personal.Loan,}\AttributeTok{p =} \FloatTok{0.6}\NormalTok{, }\AttributeTok{list =} \ConstantTok{FALSE}\NormalTok{)}
+\NormalTok{valid.df30 }\OtherTok{\textless{}{-}}\NormalTok{ df[valid.index30, ]}
+\NormalTok{test.df20 }\OtherTok{\textless{}{-}}\NormalTok{ df[}\SpecialCharTok{{-}}\NormalTok{valid.index30, ]}
+
+\DocumentationTok{\#\# Check dimensions of new data partitions}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"The first value denotes the row count and the second represents the column count of the partitioned data, validating the accuracy of the 50/30/20 data split."}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The first value denotes the row count and the second represents the column count of the partitioned data, validating the accuracy of the 50/30/20 data split. 
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{bold}\NormalTok{(}\StringTok{"Train Data Dimensions:"}\NormalTok{), }\FunctionTok{dim}\NormalTok{(train.df50), }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Train Data Dimensions: 3000 14
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{bold}\NormalTok{(}\StringTok{"Valid Data Dimensions:"}\NormalTok{), }\FunctionTok{dim}\NormalTok{(valid.df30), }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Valid Data Dimensions: 1500 14
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{bold}\NormalTok{(}\StringTok{"Test Data Dimensions:"}\NormalTok{), }\FunctionTok{dim}\NormalTok{(test.df20))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Test Data Dimensions: 3500 14
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Train kNN }
+
+\NormalTok{train.labels50 }\OtherTok{\textless{}{-}}\NormalTok{ train.df50}\SpecialCharTok{$}\NormalTok{Personal.Loan}
+\NormalTok{valid.labels30 }\OtherTok{\textless{}{-}}\NormalTok{ valid.df30}\SpecialCharTok{$}\NormalTok{Personal.Loan}
+\NormalTok{test.labels20 }\OtherTok{\textless{}{-}}\NormalTok{ test.df20}\SpecialCharTok{$}\NormalTok{Personal.Loan}
+
+\DocumentationTok{\#\# Normalize data}
+
+\NormalTok{train.norm.df50 }\OtherTok{\textless{}{-}}\NormalTok{ train.df50}
+\NormalTok{valid.norm.df30 }\OtherTok{\textless{}{-}}\NormalTok{ valid.df30}
+\NormalTok{test.norm.df20 }\OtherTok{\textless{}{-}}\NormalTok{ test.df20}
+\NormalTok{norm.df }\OtherTok{\textless{}{-}}\NormalTok{ df}
+
+\NormalTok{norm.values2 }\OtherTok{\textless{}{-}} \FunctionTok{preProcess}\NormalTok{(train.df50[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{], }\AttributeTok{method=}\FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{))}
+\NormalTok{train.norm.df50[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(norm.values2, train.df50[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{])}
+\NormalTok{valid.norm.df30[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(norm.values2, valid.df30[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{])}
+\NormalTok{test.norm.df20[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(norm.values2, test.df20[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{])}
+\NormalTok{norm.df[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(norm.values2, df[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{])}
+
+\DocumentationTok{\#\# kNN on train data}
+
+\NormalTok{nn.train50 }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}\AttributeTok{train =}\NormalTok{ train.norm.df50[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{test =}\NormalTok{ train.norm.df50[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{cl =}\NormalTok{ train.norm.df50[, }\DecValTok{10}\NormalTok{], }\AttributeTok{k =} \DecValTok{9}\NormalTok{)}
+
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{bold}\NormalTok{(}\StringTok{"Train Data:"}\NormalTok{), }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{) }\DocumentationTok{\#\#data title}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Train Data: 
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{conf.matrix.train50 }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}\AttributeTok{train =}\NormalTok{ train.norm.df50[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{test =}\NormalTok{ train.norm.df50[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{cl =}\NormalTok{ train.norm.df50[,}\DecValTok{10}\NormalTok{], }\AttributeTok{k =} \DecValTok{9}\NormalTok{, }\AttributeTok{prob =} \ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{confusionMatrix}\NormalTok{(conf.matrix.train50, }\FunctionTok{as.factor}\NormalTok{(train.norm.df50[,}\DecValTok{10}\NormalTok{]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    0    1
+##          0 2689  210
+##          1   33   68
+##                                           
+##                Accuracy : 0.919           
+##                  95% CI : (0.9087, 0.9285)
+##     No Information Rate : 0.9073          
+##     P-Value [Acc > NIR] : 0.01369         
+##                                           
+##                   Kappa : 0.3255          
+##                                           
+##  Mcnemar's Test P-Value : < 2e-16         
+##                                           
+##             Sensitivity : 0.9879          
+##             Specificity : 0.2446          
+##          Pos Pred Value : 0.9276          
+##          Neg Pred Value : 0.6733          
+##              Prevalence : 0.9073          
+##          Detection Rate : 0.8963          
+##    Detection Prevalence : 0.9663          
+##       Balanced Accuracy : 0.6162          
+##                                           
+##        'Positive' Class : 0               
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# kNN on validation data}
+
+\NormalTok{nn.valid30 }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}\AttributeTok{train =}\NormalTok{ train.norm.df50[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{test =}\NormalTok{ valid.norm.df30[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{],}
+\AttributeTok{cl =}\NormalTok{ train.norm.df50[, }\DecValTok{10}\NormalTok{], }\AttributeTok{k =} \DecValTok{9}\NormalTok{)}
+
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{bold}\NormalTok{(}\StringTok{"Validation Data:"}\NormalTok{), }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{) }\DocumentationTok{\#\#data title}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Validation Data: 
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{conf.matrix.valid30 }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}\AttributeTok{train =}\NormalTok{ train.norm.df50[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{test =}\NormalTok{ valid.norm.df30[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{cl =}\NormalTok{ train.norm.df50[,}\DecValTok{10}\NormalTok{], }\AttributeTok{k =}\NormalTok{ best.k, }\AttributeTok{prob =} \ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{confusionMatrix}\NormalTok{(conf.matrix.valid30, }\FunctionTok{as.factor}\NormalTok{(valid.norm.df30[,}\DecValTok{10}\NormalTok{]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    0    1
+##          0 1318  100
+##          1   32   50
+##                                           
+##                Accuracy : 0.912           
+##                  95% CI : (0.8965, 0.9259)
+##     No Information Rate : 0.9             
+##     P-Value [Acc > NIR] : 0.06403         
+##                                           
+##                   Kappa : 0.3878          
+##                                           
+##  Mcnemar's Test P-Value : 5.49e-09        
+##                                           
+##             Sensitivity : 0.9763          
+##             Specificity : 0.3333          
+##          Pos Pred Value : 0.9295          
+##          Neg Pred Value : 0.6098          
+##              Prevalence : 0.9000          
+##          Detection Rate : 0.8787          
+##    Detection Prevalence : 0.9453          
+##       Balanced Accuracy : 0.6548          
+##                                           
+##        'Positive' Class : 0               
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# kNN on test data}
+
+\NormalTok{nn.test20 }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}\AttributeTok{train =}\NormalTok{ train.norm.df50[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{test =}\NormalTok{ test.norm.df20[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{cl =}\NormalTok{ train.norm.df50[, }\DecValTok{10}\NormalTok{], }\AttributeTok{k =}\NormalTok{ best.k)}
+
+
+\NormalTok{conf.matrix.test20 }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}\AttributeTok{train =}\NormalTok{ train.norm.df50[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{test =}\NormalTok{ test.norm.df20[,}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{], }\AttributeTok{cl =}\NormalTok{ train.norm.df50[,}\DecValTok{10}\NormalTok{], }\AttributeTok{k =}\NormalTok{ best.k, }\AttributeTok{prob =} \ConstantTok{TRUE}\NormalTok{)}
+
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{bold}\NormalTok{(}\StringTok{"Test Data:"}\NormalTok{), }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{) }\DocumentationTok{\#\#data title}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Test Data: 
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{confusionMatrix}\NormalTok{(conf.matrix.test20, }\FunctionTok{as.factor}\NormalTok{(test.norm.df20[,}\DecValTok{10}\NormalTok{]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    0    1
+##          0 3098  237
+##          1   72   93
+##                                           
+##                Accuracy : 0.9117          
+##                  95% CI : (0.9018, 0.9209)
+##     No Information Rate : 0.9057          
+##     P-Value [Acc > NIR] : 0.1172          
+##                                           
+##                   Kappa : 0.3339          
+##                                           
+##  Mcnemar's Test P-Value : <2e-16          
+##                                           
+##             Sensitivity : 0.9773          
+##             Specificity : 0.2818          
+##          Pos Pred Value : 0.9289          
+##          Neg Pred Value : 0.5636          
+##              Prevalence : 0.9057          
+##          Detection Rate : 0.8851          
+##    Detection Prevalence : 0.9529          
+##       Balanced Accuracy : 0.6296          
+##                                           
+##        'Positive' Class : 0               
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Calculate train accuracy}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"The train data accuracy is the highest. This is expected since the model was trained on this data. However, the validation and test accuracies are only slightly lower. This small difference suggests that the model is generalizing well and not overfitting or underfitting the data."}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The train data accuracy is the highest. This is expected since the model was trained on this data. However, the validation and test accuracies are only slightly lower. This small difference suggests that the model is generalizing well and not overfitting or underfitting the data. 
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{conf.matrix.train50 }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{Predicted =}\NormalTok{ nn.train50, }\AttributeTok{Actual =}\NormalTok{ train.labels50)}
+\NormalTok{conf.matrix.valid30 }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{Predicted =}\NormalTok{ nn.valid30, }\AttributeTok{Actual =}\NormalTok{ valid.labels30)}
+\NormalTok{conf.matrix.test20 }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{Predicted =}\NormalTok{ nn.test20, }\AttributeTok{Actual =}\NormalTok{ test.labels20)}
+
+\NormalTok{train.accuracy50 }\OtherTok{\textless{}{-}} \FunctionTok{sprintf}\NormalTok{(}\StringTok{"\%.1f\%\%"}\NormalTok{, }\FunctionTok{sum}\NormalTok{(}\FunctionTok{diag}\NormalTok{(conf.matrix.train50))}\SpecialCharTok{/}\FunctionTok{sum}\NormalTok{(conf.matrix.train50)}\SpecialCharTok{*}\DecValTok{100}\NormalTok{)}
+
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{bold}\NormalTok{(}\StringTok{"Train Accuracy:"}\NormalTok{), train.accuracy50, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Train Accuracy: 91.9%
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Calculate valid accuracy}
+
+\NormalTok{valid.accuracy30 }\OtherTok{\textless{}{-}} \FunctionTok{sprintf}\NormalTok{(}\StringTok{"\%.1f\%\%"}\NormalTok{, }\FunctionTok{sum}\NormalTok{(}\FunctionTok{diag}\NormalTok{(conf.matrix.valid30))}\SpecialCharTok{/}\FunctionTok{sum}\NormalTok{(conf.matrix.valid30)}\SpecialCharTok{*}\DecValTok{100}\NormalTok{)}
+
+\FunctionTok{cat}\NormalTok{( }\FunctionTok{bold}\NormalTok{(}\StringTok{"Valid Accuracy:"}\NormalTok{), valid.accuracy30, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Valid Accuracy: 90.7%
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Calculate test accuracy}
+
+\NormalTok{test.accuracy20 }\OtherTok{\textless{}{-}} \FunctionTok{sprintf}\NormalTok{(}\StringTok{"\%.1f\%\%"}\NormalTok{,}\FunctionTok{sum}\NormalTok{(}\FunctionTok{diag}\NormalTok{(conf.matrix.test20))}\SpecialCharTok{/}\FunctionTok{sum}\NormalTok{(conf.matrix.test20)}\SpecialCharTok{*}\DecValTok{100}\NormalTok{)}
+
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{bold}\NormalTok{(}\StringTok{"Test Accuracy:"}\NormalTok{), test.accuracy20, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Test Accuracy: 91.0%
+\end{verbatim}
+
+\end{document}
