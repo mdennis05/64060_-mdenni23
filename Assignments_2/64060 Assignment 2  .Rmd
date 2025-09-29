@@ -133,11 +133,11 @@ information?")
 ```
 ```{r}
 # initialize a data frame with two columns: k, and accuracy.
-accuracy.df <- data.frame(k = seq(1, 14, 1), accuracy = rep(0, 14))
+accuracy.df <- data.frame(k = seq(1, 20, 1), accuracy = rep(0, 20))
 
 # compute accuracy
 
-for(i in 1:14){
+for(i in 1:20){
 knn.pred <- knn(train = train.norm.df[, -10], test = valid.norm.df[, -10],
 cl = train.norm.df[, 10], k = i, prob = TRUE)
 accuracy.df[i, 2] <- confusionMatrix(knn.pred, as.factor(valid.norm.df[, 10]))$overall[1]
@@ -147,9 +147,22 @@ accuracy.df
 ```
 
 ```{r}
+#Accuracy vs k
+
+best.k <- 5
+
+accuracy.k <- sapply(1:20, function(k){
+  knn.pred <- knn(train = train.norm.df, test = valid.norm.df, cl=train.labels, k= best.k)
+  sum(diag(table(Predicted = knn.pred, Actual = valid.labels)))/length(valid.labels)
+})
+
+plot(1:20, accuracy.k, col = 'steelblue', pch=19, type = "b", xlab = "k", ylab = "Accuracy", main = "Accuracy vs k")
+
+axis(side = 1, at = seq(0,20, by = 1))
+axis(side = 2, at = seq(0,1, by = 0.5))
+
 cat("Using the training data to classify the records in the validation date to calculate the error rates for various choises of k, we have determined '6' is the best value for k.", "\n", "\n")
 
-best.k <- 6
 ```
 ```{r}
 cat("3. Show the confusion matrix for the validation data that results from using the best k.")
@@ -166,7 +179,7 @@ confusionMatrix(best.conf.matrix, as.factor(valid.norm.df[,10]))
 
 ## Re-run accuracy with best k
 
-cat("Selecting 9 as the best k value gives us a prediction accuracy of 89.35%","\n", "\n")
+cat("Selecting 5 as the best k value gives us a prediction accuracy of 90%","\n", "\n")
 
 conf.matrix <- table(Predicted = knn.pred, Actual = valid.labels)
 
@@ -186,10 +199,10 @@ Card = 1. Classify the customer using the best k.")
 
 new.cust.df <- data.frame(Age = 40, Experience = 10, Income = 84, Family = 2, CCAvg = 2, Education_1 = 0, Education_2 = 1, Education_3 = 0, Mortgage = 0, Securities.Account = 0, CD.Account = 0, Online = 1, CreditCard = 1)
 
-nn.new.cust.pred <- knn(train = train.df[,-10],test = new.cust.df, cl = train.df[,10], k=9, prob = TRUE)
+nn.new.cust.pred <- knn(train = train.df[,-10],test = new.cust.df, cl = train.df[,10], k=best.k, prob = TRUE)
 
 
-cat("Even with the most effective k value, the prediction output of '0' suggests the customer will not accept the loan with an accuracy of 92.86%","\n", "\n")
+cat("Even with the most effective k value, the prediction output of '0' suggests the customer will not accept the loan with an accuracy of 87.5%","\n", "\n")
 
 nn.new.cust.pred
 
@@ -246,17 +259,17 @@ norm.df[, 1:2] <- predict(norm.values2, df[, 1:2])
 
 ## kNN on train data
 
-nn.train50 <- knn(train = train.norm.df50[,-10], test = train.norm.df50[,-10], cl = train.norm.df50[, 10], k = 9)
+nn.train50 <- knn(train = train.norm.df50[,-10], test = train.norm.df50[,-10], cl = train.norm.df50[, 10], k = best.k)
 
 cat(bold("Train Data:"), "\n", "\n") ##data title
 
-conf.matrix.train50 <- knn(train = train.norm.df50[,-10], test = train.norm.df50[,-10], cl = train.norm.df50[,10], k = 9, prob = TRUE)
+conf.matrix.train50 <- knn(train = train.norm.df50[,-10], test = train.norm.df50[,-10], cl = train.norm.df50[,10], k = best.k, prob = TRUE)
 confusionMatrix(conf.matrix.train50, as.factor(train.norm.df50[,10]))
 
 ## kNN on validation data
 
 nn.valid30 <- knn(train = train.norm.df50[,-10], test = valid.norm.df30[,-10],
-cl = train.norm.df50[, 10], k = 9)
+cl = train.norm.df50[, 10], k = best.k)
 
 cat(bold("Validation Data:"), "\n", "\n") ##data title
 
