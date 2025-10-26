@@ -1,0 +1,216 @@
+---
+title: "Assignment 4"
+author: "Melissa Dennis"
+date: "2025-10-26"
+output: word_document
+---
+
+```{r}
+##Load Libraries
+
+library(factoextra)
+library(cluster)
+library(dplyr)
+library(ggplot2)
+library(skimr)
+library(tidyverse)
+library(kableExtra)
+library(caret)
+library(e1071)
+library(reshape2)
+library(reshape)
+library(crayon)
+```
+
+```{r}
+##Load data
+
+df <- read.csv("C:/Users/m_den/Downloads/Pharmaceuticals.csv")
+```
+
+```{r}
+##Process data
+
+row.names(df) <- df[,1]
+df <- df[,-1]
+```
+
+```{r}
+##Prnit question
+
+cat("A. Use only the numerical variables (1 to 9) to cluster the 21 firms. Justify the various choices made in
+conducting the cluster analysis, such as weights for different variables, the specific clustering algorithm(s)
+used, the number of clusters formed, and so on.")
+```
+
+```{r}
+##Check variables, then normalize data
+
+df.norm <- df %>%
+  select_if(is.numeric) %>%
+  scale()
+```
+
+```{r}
+##Run kmeans algorithm
+
+km <- kmeans(df.norm, 9)
+```
+
+```{r}
+##Show cluster membership
+
+km$cluster
+```
+
+```{r}
+##Centroids
+
+km$centers
+```
+
+```{r}
+##Within-cluster sum of squares
+
+km$withinss
+```
+
+```{r}
+##Cluster size
+
+km$size
+```
+
+```{r}
+##Cluster centroids plot
+
+centers <- as.data.frame(km$centers)
+centers$cluster <- rownames(centers)
+centers.melt <- melt(centers, id.vars = "cluster")
+ggplot(centers.melt, aes(x = variable, y = value, group = cluster, color = cluster)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Cluster Centroids Profiling Plot", x = "Variables", y = "Centroid Values") +
+  theme_minimal()
+
+```
+
+```{r}
+##Euclidean distance between clusters
+
+dist(km$centers)
+```
+```{r}
+##K-means clustering using kmeans function
+set.seed(123)
+wss <- numeric(9)
+for (i in 1:9) {
+  df.kmeans <- kmeans(df.norm, centers = i, nstart = 5)
+  wss[i] <- df.kmeans$tot.withinss
+}
+
+##Plot euclidean distance between clusters
+
+fviz_nbclust(df.norm, kmeans, method = "wss") + theme_minimal()
+```
+
+```{r}
+##Hierarchical clustering, using dendrogram to find the best k
+
+d <- dist(df.norm, method = "euclidean")
+hc <- hclust(d, method = "ward.D2")
+plot(hc, main = "Dendrogram", hang = -1)
+
+##highlight the clusters
+
+rect.hclust(hc, k = 4, border = 2:5)
+```
+
+```{r}
+##Print question
+
+cat("B. Interpret the clusters with respect to the numerical variables used in forming the clusters.")
+```
+
+```{r}
+##Centroids of clusters
+
+km$centers
+```
+```{r}
+##K-means clustering, using k = 3
+
+df.k3 <- kmeans(df.norm, centers = 3, nstart = 5)
+df.k3
+```
+```{r}
+##Plot the clustered centroids values
+
+centers <- as.data.frame(df.k3$centers)
+centers$cluster <- rownames(centers)
+centers.melt <- melt(centers, id.vars = "cluster")
+ggplot(centers.melt, aes(x = variable, y = value, group = cluster, color = cluster)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Cluster Centroids Plot", x = "Variables", y = "Centroid Values") +
+  theme_minimal()
+```
+
+```{r}
+##Cluster centroids plot
+##Visualize the clusters with symbol variable as label of the nodes
+
+fviz_cluster(df.k3, data = df.norm, geom = "point", ellipse.type = "convex", ellipse = TRUE, label = "symbol", ggtheme = theme_minimal())
+```
+
+```{r}
+##Print interpretation
+
+cat("Cluster 1 is defined by its extreme volatility and debt. They have the highest Leverage (0.85), meaning they carry a lot of debt, and very fast Rev Growth (0.92). But they are also the worst performers financially: they have very low market size (Market_Cap: -0.83), extremely poor asset utilization (Asset_Turnover: -1.00), and poor returns (ROE: -0.56, ROA: -0.85). They seem to be younger, aggressive companies focused on expansion at any cost, using high debt and sacrificing all profitability. Firms like AVE, CHTT, ELN, IVX, MRX, and WPI land here. \n \nCluster 2 is the group of solid, reliable winners. They have the highest profitability and efficiency metrics, like high ROE (0.66), high ROA (0.83), and the highest Net Profit Margin (0.68). They are the largest companies (Market_Cap: 0.67) and are efficient with their assets (Asset_Turnover: 0.46). They also have the lowest risk (Beta: -0.36) and low debt. These are large, mature, well-managed firms with excellent returns. This category includes JNJ, PFE, MRK, and a majority of the sample. \n \nCluster 3 is a concerning group that is highly unprofitable but highly valued by investors. They have a massive PE_Ratio (1.31), meaning their stock price is high relative to their earnings. The reason is they are highly unprofitable, showing the lowest ROA (-1.02) and the lowest Net Profit Margin (-1.38). Their low returns and low market size suggest they are struggling companies that may be overvalued, potentially based on old growth expectations or speculation. AGN, AHM, BAY, and PHA are in this group.")
+
+```
+
+
+```{r}
+##Print questions
+
+cat("C. Is there a pattern in the clusters with respect to the numerical variables (10 to 12)? (those not used in
+forming the clusters)")
+```
+
+```{r}
+##Add cluster variable to Pharmaceuticals data
+
+df$cluster <- df.k3$cluster
+
+##Table of cluster variable by location, stock exchange, and median recommendation
+
+table(df.k3$cluster, df$Location)
+```
+
+```{r}
+table(df.k3$cluster, df$Exchange)
+```
+
+```{r}
+table(df.k3$cluster, df$Median_Recommendation)
+```
+
+```{r}
+##Print interpretation
+
+cat("The clusters show clear differences based on where the companies are from, where they trade, and what analysts think. For Cluster 2, they're mostly from stable places like the US and France, trade heavily on the NYSE, and get a mix of Hold and Moderate Buy ratings, suggesting they're solid but maybe fully priced. Cluster 1 are a US and Canadian mix, trade only on the NYSE, and analysts are cautious, giving them Hold or Moderate Sell ratings because of their high-risk profile. Cluster 3 are mostly from developed markets like the US and UK, trade mainly on the NYSE, and yet, despite struggling financially, they get ratings as high as Strong Buy. This strange mix of bad financials and good ratings helps explain why they have a super high PE ratio, investors or analysts might be betting big on a turnaround that hasn't happened yet.")
+```
+
+```{r}
+##Print question
+
+cat("D. Provide an appropriate name for each cluster using any or all of the variables in the dataset")
+```
+
+```{r}
+##Print the names for each cluster
+
+cat(bold("Cluster 1:"),"Volatile Firms\n",bold("Cluster 2:"),"Reliable Firms","\n",bold("Cluster 3:"),"Overvalued Firms")
+```
+
