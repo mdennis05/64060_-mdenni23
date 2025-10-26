@@ -5,26 +5,100 @@ date: "2025-10-24"
 output: word_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r}
+##Load Libraries
+
+library(factoextra)
+library(cluster)
+library(dplyr)
+library(ggplot2)
+library(skimr)
+library(tidyverse)
+library(kableExtra)
+library(caret)
 ```
 
-## R Markdown
+```{r}
+##Load data
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+df <- read.csv("C:/Users/m_den/Downloads/Pharmaceuticals.csv")
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+cat("A. Use only the numerical variables (1 to 9) to cluster the 21 firms. Justify the various choices made in
+conducting the cluster analysis, such as weights for different variables, the specific clustering algorithm(s)
+used, the number of clusters formed, and so on.")
+```
+```{r}
+##Check variables, then normalize data
+df.scaled <- df %>%
+  select_if(is.numeric) %>%
+  scale()
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+dist(df.scaled$centers)
+```
+
+
+```{r}
+##K-means clustering using kmeans function
+set.seed(123)
+wss <- numeric(9)
+for (i in 1:9) {
+  df.kmeans <- kmeans(df.scaled, centers = i, nstart = 5)
+  wss[i] <- df.kmeans$tot.withinss
+}
+
+##Plot  using fviz_nbclust
+fviz_nbclust(df.scaled, kmeans, method = "wss") + theme_minimal()
+```
+
+```{r}
+##Gap statistic to find the best k
+
+set.seed(123)
+
+gap_stat <- clusGap(df.scaled, FUN = kmeans, nstart = 25, K.max = 10, B = 50)
+fviz_gap_stat(gap_stat) + theme_minimal()
+```
+
+```{r}
+##K-means clustering, using k = 4
+df.k4 <- kmeans(df.scaled, centers = 4, nstart = 5)
+df.k4a <- kmeans(df.scaled, centers = 4, nstart = 200)
+df.k4
+```
+
+```{r}
+df.k4a
+```
+
+```{r}
+##Visualize the clusters with symbol variable as label of the nodes
+
+fviz_cluster(df.k4, data = df.scaled, geom = "point", ellipse.type = "convex", ellipse = TRUE, label = "symbol", ggtheme = theme_minimal())
+```
+
+```{r}
+fviz_cluster(df.k4a, data = df.scaled, geom = "point", ellipse.type = "convex", ellipse = TRUE, label = "symbol", ggtheme = theme_minimal())
+```
+
+```{r}
+##Hierarchical clustering, using dendrogram to find the best k
+d <- dist(df.scaled, method = "euclidean")
+hc <- hclust(d, method = "ward.D2")
+plot(hc, main = "Dendrogram", hang = -1)
+
+##highlight the clusters
+rect.hclust(hc, k = 4, border = 2:5)
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
