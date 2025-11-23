@@ -20,30 +20,35 @@ str(cereal.df)
 ```{r}
 summary(cereal.df)
 ```
+```{r}
+##Remove NA
+df <- na.omit(cereal.df)
+```
+
 
 ```{r}
 ##Examine dataset
-head(cereal.df)
+head(df)
 ```
 
 Convert the names of cereals to row names
 ```{r}
 ##Convert Names to row names
-rownames(cereal.df) <- cereal.df$name
+rownames(df) <- df$name
 
 ##Remove duplicate column
-cereal.df$name = NULL
+df$name = NULL
 ```
 
 ```{r} 
 ##Remove MFR and Type columns
-cereal.df <- cereal.df[,-(1:2)]
-head(cereal.df)
+df <- df[,-(1:2)]
+head(df)
 ```
 
 Scaling and standardizing dataset
 ```{r}
-df <- scale(cereal.df, center = T, scale = T)
+df <- scale(df, center = T, scale = T)
 
 #Reexamine the scaled data
 head(df) 
@@ -55,20 +60,19 @@ Load libraries
 library(stats)
 library(cluster)
 library(factoextra)
+library(tidyverse)
 ```
 
 Calculate the distance measures
 ```{r}
 ##Use the euclidean distance measure
-dist <- dist(cereal.df, method = "euclidean")
+dist <- dist(df, method = "euclidean")
 
 hc_fit <- hclust(dist, method = "ward.D2")
 ```
 
-Plot using complete
+Plot using complete, single, ward, and avereage to determine which linkage is best
 ```{r}
-# in hclust() set argument method =  
-# to "ward.D", "single", "complete", "average", "median", or "centroid"
 hc1 <- hclust(dist, method = "complete")
 plot(hc1, cex = 0.3, hang = -1)
 ```
@@ -97,13 +101,13 @@ Plot using single
 hc6 <- hclust(dist, method = "single")
 plot(hc6, cex = 0.3, hang = -1)
 ```
-
+Calculate and plot using Agnes for each linkage
 ```{r}
 ##Compute with agnes and with different linkage methods
-hc_single <- agnes(cereal.df, method = "single")
-hc_complete <- agnes(cereal.df, method = "complete")
-hc_average <- agnes(cereal.df, method = "average")
-hc_ward <- agnes(cereal.df, method = "ward")
+hc_single <- agnes(df, method = "single")
+hc_complete <- agnes(df, method = "complete")
+hc_average <- agnes(df, method = "average")
+hc_ward <- agnes(df, method = "ward")
 
 ##Compare Agglomerative coefficients
 pltree(hc_complete, cex = 0.3, hang = -1, main = "Dendrogram of Complete Agnes")
@@ -134,20 +138,23 @@ print(hc_ward$ac)
 ```
 Ward linkage provides the strongest clustering structure because of it has the highest Agglomerative coefficient.
 
-Using a height cutoff of 200, 10 cluster can be established.
+Using a height cutoff of 10, 6 cluster can be established.
 
 ```{r}
-pltree(hc_ward,cex = 0.3, hang = -1, main = "Dendrogram of Ward Agnes", xlab = "Cereal Name")
+##Plot ward linkage with 6 clusters bordered
+plot(hc_fit, cex = 0.3, hang = -1, main = "Dendrogram of Ward Agnes", xlab = "Cereal Name")
 
-rect.hclust(hc_ward, k = 6, border = 2:10)
+rect.hclust(hc_fit, k = 6, border = 2:8)
 ```
+
+
 Add column to dataset denoted the cluster the cereal is located in
 ```{r}
-points_hc <- cutree(hc_ward, k = 6)
+points_hc <- cutree(hc_fit, k = 6)
 
 ##Store the clusters in a data frame along with the cereals data
 
-cereals_clusts_hc <- cbind(points_hc, cereal.df)
+cereals_clusts_hc <- cbind(points_hc, df)
 
 ##The head of the new data frame
 
@@ -157,22 +164,60 @@ head(cereals_clusts_hc)
 ```
 Print the cereal and assigned cluster
 ```{r}
-memb <- cutree(hc_ward, k = 6)
+memb <- cutree(hc_fit, k = 6)
 memb
 
 ```
 
 
 Plot clusters on a heat map
-```{r}
-##set labels as cluster membership and cereal name
-row.names(df) <- paste(memb, ": ", row.names(cereals_clusts_hc), sep = "")
 
-##plot heatmap 
-heatmap(as.matrix(df), Colv = NA, hclustfun = hclust, 
-        col=rev(paste("grey",1:99,sep="")))
+```{r}
+##Set labels
+row.names(cereals_clusts_hc) <- paste(memb, ": ", row.names(cereals_clusts_hc), sep = "")
+
+##Create a dendrogram object
+##We use as.dendrogram so heatmap knows how to handle it
+my_dendrogram <- as.dendrogram(hc5)
+
+##Plot heatmap
+heatmap(as.matrix(cereals_clusts_hc), 
+        Rowv = my_dendrogram, 
+        Colv = NA, 
+        col = rev(paste("grey",1:99,sep="")),
+        scale = "none",
+        main = "Heatmap Ordered by Ward Clustering (k=6)"
+        )
+```
+
+Build a kmeans model with k = 2
+```{r}
+set.seed(123)
+km_basic <- kmeans(cereals_clusts_hc, centers = 2)
+
+str(km_basic)
+
+
+```
+
+Plot cereals in 2 clusters
+```{r}
+fviz_cluster(km_basic, df)
+```
+
+```{r}
+cat("The elementary public schools would like to choose a set of cereals to include in their daily cafeterias. Every day a different cereal is offered, but all cereals should support a healthy diet. For this goal, you are requested to find a cluster of “healthy cereals.” Should the data be normalized? If not, how should they be used in the cluster analysis? \n\nElementary public schools should choose cluster 1 as this has the healthiest selection of cereals")
 ```
 
 
 
+Cluster the data to confirm which cereals are the best choice. 
+
+```{r}
+sub_grp <- cutree(hc5, k = 6)
+```
+
+```{r}
+fviz_cluster(list(data = df, cluster = sub_grp))
+```
 
