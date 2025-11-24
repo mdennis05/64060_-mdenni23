@@ -125,7 +125,7 @@ pltree(hc_single, cex = 0.3, hang = -1, main = "Dendrogram of Single Agnes")
 pltree(hc_ward, cex = 0.3, hang = -1, main = "Dendrogram of Ward Agnes")
 ```
 
-
+Print the Agglomerative coefficient for each linkage.
 ```{r}
 print(hc_single$ac)
 
@@ -196,8 +196,6 @@ set.seed(123)
 km_basic <- kmeans(cereals_clusts_hc, centers = 2)
 
 str(km_basic)
-
-
 ```
 
 Plot cereals in 2 clusters
@@ -206,17 +204,16 @@ fviz_cluster(km_basic, df)
 ```
 
 ```{r}
-cat("The elementary public schools would like to choose a set of cereals to include in their daily cafeterias. Every day a different cereal is offered, but all cereals should support a healthy diet. For this goal, you are requested to find a cluster of “healthy cereals.” Should the data be normalized? If not, how should they be used in the cluster analysis? \n\nElementary public schools should choose cluster 1 as this has the healthiest selection of cereals")
+cat("The elementary public schools would like to choose a set of cereals to include in their daily cafeterias. Every day a different cereal is offered, but all cereals should support a healthy diet. For this goal, you are requested to find a cluster of “healthy cereals.” Should the data be normalized? If not, how should they be used in the cluster analysis? \n\nElementary public schools should choose cluster 1 as this has the healthiest selection of cereals. The cluster that has the lowest values for unhealthy metrics like sugar and fat and the highest values for healthy metrics like fiber and vitamins. Normalizing the data will allow the clustering algorithm to find this group effectively. Normalization is crucial for this analysis because cereals have features measured on different scales. Without normalization, features with larger absolute values would have a greater influence on the distance calculation, leading to a distorted cluster structure")
 ```
 
 
 
 Cluster the data to confirm which cereals are the best choice. 
-
 ```{r}
 sub_grp <- cutree(hc5, k = 6)
 ```
-
+Print the clusters
 ```{r}
 fviz_cluster(list(data = df, cluster = sub_grp))
 ```
