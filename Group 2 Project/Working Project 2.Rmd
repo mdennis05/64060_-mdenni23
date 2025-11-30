@@ -195,7 +195,7 @@ print(cluster_plot)
 ```{r}
 ##Problem Identification
 
-##The "problem" is likely found in the smallest cluster.
+##The problem is likely found in the smallest cluster.
 ##This cluster contains observations that are statistically distinct from the rest of the data.
 ##Filter the original data to inspect the problematic/unique data points:
 potential_problem_cluster <- cluster_summary$cluster[1]
