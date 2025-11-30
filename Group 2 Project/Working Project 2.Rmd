@@ -1,0 +1,211 @@
+---
+title: "Group 2 Project"
+author: "Melissa Dennis, Stephen Gombos, Kyle Beeden"
+date: "2025-11-30"
+output: word_document
+---
+```{r}
+##Load libraries
+
+library(readr)  
+library(dplyr)  
+library(janitor)  
+library(ggplot2)  
+library(cluster)  
+library(readxl)
+```
+
+
+```{r} 
+##Load data
+
+raw_df <- read_excel("C:/Users/m_den/OneDrive/Documents/GitHub/64060_-mdenni23/Group 2 Project/EIA923_Schedules_2_3_4_5_M_12_2023_Final.xlsx")
+
+##Isolate the last 6 columns and remove the first 4 rows
+data_raw <- raw_df[-(1:4),]
+
+##Use the first row as the column names
+colnames(data_raw) <- data_raw[1,]
+
+##Remove first row as this is now a duplicate row
+data_raw <- data_raw[-(1),]
+
+##Clean column names for easier use
+df_cleaned <- data_raw %>% 
+  clean_names()
+
+head(df_cleaned)
+```
+
+```{r}
+##Data preparation and processing
+##Identify relevant numerical columns for clustering.
+##Focus on the 'Quantity Consumed' and 'Net Generation' columns.
+##Select the 'Total Quantity Consumed' columns for Jan-Dec and the 
+##'Electricity Net Generation (MWh)' columns for Jan-Dec.
+
+clustering_features_raw <- df_cleaned %>%
+  select(
+    starts_with("quantity_") & !ends_with("label"),
+    starts_with("electricity_net_generation_m_wh_")
+  )
+
+##Convert all selected columns from character type to numeric.
+##Errors will be coerced to NA.
+clustering_data <- clustering_features_raw %>%
+  mutate(across(everything(), ~as.numeric(as.character(.))))
+
+##Handle missing values (NA) by replacing them with 0, 
+##as NA likely means no consumption/generation for that month/plant.
+clustering_data <- clustering_data %>%
+  mutate_all(~replace(., is.na(.), 0))
+
+##Scale the data.
+##with large values (like Generation in MWh) don't dominate the clustering 
+##over features with smaller values (like consumption in barrels/tons).
+df_scaled <- scale(clustering_data)
+
+```
+
+
+```{r}
+##Determine Optimal Number of Clusters K
+
+##Elbow Method to choose K. Look for a bend in the plot.
+##Test k from 1 to 8.
+set.seed(123)
+k_max <- 8
+
+##Calculate the Within-Cluster Sum of Squares for each K
+wcss <- sapply(1:k_max, function(k){
+  kmeans(df_scaled, centers = k, nstart = 20)$tot.withinss
+})
+
+##Visualize the Elbow Plot
+elbow_plot <- data.frame(k = 1:k_max, wcss = wcss) %>%
+  ggplot(aes(x = k, y = wcss)) +
+  geom_line(color = "blue", linewidth = 1) +
+  geom_point(color = "blue", size = 3) +
+  labs(
+    title = "Elbow Method to Determine Optimal K",
+    x = "Number of Clusters (K)",
+    y = "Within-Cluster Sum of Squares (WCSS)"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+print(elbow_plot)
+
+```
+
+```{r}
+##Perform K-Means Clustering
+
+##Based on the elbow plot, visually inspecting the bend 3 should be used for k. 
+
+K_FINAL <- 3 
+
+kmeans_result <- kmeans(df_scaled, centers = K_FINAL, nstart = 20)
+
+##Attach the cluster assignment back to the original cleaned dataframe
+df_clustered <- df_cleaned %>%
+  mutate(cluster = as.factor(kmeans_result$cluster))
+```
+
+```{r}
+##Attach the monthly data and cluster assignment, AND calculate annual sums for summary purposes, since the dedicated annual columns were not found.
+df_clustered <- df_cleaned %>%
+  mutate(
+    cluster = as.factor(kmeans_result$cluster),
+    
+    ##Calculate Annual Net Generation by summing monthly MWh columns
+    calculated_annual_net_gen = rowSums(
+      clustering_data %>% select(starts_with("electricity_net_generation_m_wh_")),
+      na.rm = TRUE
+    ),
+    
+    ##Calculate Annual Quantity Consumed by summing monthly quantity columns
+    calculated_annual_quantity_consumed = rowSums(
+      clustering_data %>% select(starts_with("quantity_")),
+      na.rm = TRUE
+    )
+  )
+```
+
+
+```{r}
+##Look at the size of the clusters
+cat("Cluster Sizes:")
+df_clustered %>%
+  group_by(cluster) %>%
+  summarise(count = n()) %>%
+  print()
+
+# The "problem" usually manifests in:
+# 1. A very small cluster (maybe N=1 or 2) that represents outliers.
+# 2. A cluster with highly unusual characteristics (e.g., high generation 
+#    but very low fuel consumption, which might indicate renewable energy sources, 
+#    or simply bad data/an unusual reporting structure).
+```
+
+```{r}
+##Summarize the key features by cluster to identify what makes them different
+##NOW USING THE CALCULATED ANNUAL COLUMNS
+cluster_summary <- df_clustered %>%
+  group_by(cluster) %>%
+  summarise(
+    avg_annual_net_gen = mean(calculated_annual_net_gen, na.rm = TRUE),
+    avg_quantity_consumed_annual = mean(calculated_annual_quantity_consumed, na.rm = TRUE),
+    most_common_fuel = names(sort(table(reported_fuel_type_code), decreasing = TRUE))[1],
+    most_common_state = names(sort(table(plant_state), decreasing = TRUE))[1],
+    num_plants = n()
+  ) %>%
+  arrange(num_plants)
+
+print("Cluster Characteristics:")
+print(cluster_summary)
+```
+
+```{r}
+##Visualization for identifying outlines/problems
+##Using Principal Component Analysis to reduce the 24 monthly features down to 2 components so we can plot the clusters on a 2D graph.
+pca_result <- prcomp(df_scaled, scale. = FALSE)
+pca_data <- as.data.frame(pca_result$x) %>%
+  mutate(cluster = df_clustered$cluster)
+
+##Plot the clusters using the first two principal components (PC1 and PC2)
+cluster_plot <- pca_data %>%
+  ggplot(aes(x = PC1, y = PC2, color = cluster)) +
+  geom_point(alpha = 0.6) + # Plot all points
+  geom_point(data = filter(pca_data, cluster == cluster_summary$cluster[1]), 
+             size = 4, shape = 1, color = "black") + # Highlight the smallest cluster (potential problem/outlier)
+  labs(
+    title = paste("Plant/Fuel Profiles Clustered (K=", K_FINAL, ")"),
+    subtitle = "Visualized using the first two Principal Components (PC1 and PC2)",
+    caption = "Smallest cluster is highlighted with a black border."
+  ) +
+  scale_color_discrete(name = "Cluster") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+print(cluster_plot)
+
+```
+
+```{r}
+##Problem Identification
+
+##The "problem" is likely found in the smallest cluster.
+##This cluster contains observations that are statistically distinct from the rest of the data.
+##Filter the original data to inspect the problematic/unique data points:
+potential_problem_cluster <- cluster_summary$cluster[1]
+
+problem_data_points <- df_clustered %>%
+  filter(cluster == potential_problem_cluster) %>%
+  ##Using the calculated annual columns here
+  select(plant_id, plant_name, plant_state, reported_fuel_type_code, 
+         calculated_annual_net_gen, calculated_annual_quantity_consumed, cluster)
+
+print(paste("--- Potential Problem/Anomaly Data Points (Cluster", potential_problem_cluster, ") ---"))
+print(problem_data_points)
+```
