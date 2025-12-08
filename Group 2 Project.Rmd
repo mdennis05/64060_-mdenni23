@@ -1,0 +1,78 @@
+---
+title: "Group 2 Project"
+author: "Melissa Dennis"
+date: "2025-11-28"
+output: word_document
+---
+
+Prepare the data
+```{r}
+##Load the following packages
+library(readxl)
+library(stats)
+library(cluster)
+library(factoextra)
+library(tidyverse)
+library(data.table)
+library(factoextra)
+library(cluster)
+library(dplyr)
+library(ggplot2)
+library(skimr)
+library(kableExtra)
+library(caret)
+library(e1071)
+library(reshape2)
+library(reshape)
+library(crayon)
+
+##Read the Excel file
+raw_df <- read_excel("C:/Users/m_den/OneDrive/Documents/GitHub/64060_-mdenni23/Group 2 Project/EIA923_Schedules_2_3_4_5_M_12_2023_Final.xlsx")
+
+##Isolate the last 6 columns and remove the first 4 rows
+df <- raw_df[-(1:4),-(2:91)]
+
+##Use the first row as the column names
+colnames(df) <- df[1,]
+
+##Remove first row as this is now a duplicate row
+df <- df[-(1),]
+
+##View the imported data
+head(df)
+```
+
+Clean the data
+```{r}
+##Remove na values
+df <- na.omit(df)
+```
+
+```{r}
+##Convert data to numeric values
+df_norm <- df %>%
+  select_if(is.numeric) %>%
+  scale()
+```
+
+```{r}
+##Combine Duplicate Plant Id data
+#df <- as.data.table(df)
+#df_comb <- df[, lapply(.SD, sum), by = `Plant Id`]
+```
+
+```{r}
+##Use the euclidean distance measure
+dist <- dist(df_norm, method = "euclidean")
+```
+
+```{r}
+##Normalize data
+#df_norm <- scale(df, center = T, scale = T)
+```
+
+```{r}
+##Reexamine the normalized data
+head(df_norm)
+```
+

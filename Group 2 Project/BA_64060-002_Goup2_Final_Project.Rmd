@@ -1,10 +1,11 @@
 ---
 title: "Group 2 Project"
 author: "Melissa Dennis, Stephen Gombos, Kyle Beeden"
-date: "2025-11-30"
+date: "2025-12-06"
 output: word_document
 ---
 ```{r}
+#rm(list = ls())
 ##Load libraries
 
 library(readr)  
@@ -13,13 +14,15 @@ library(janitor)
 library(ggplot2)  
 library(cluster)  
 library(readxl)
+library(tidyr)
+library(factoextra)
 ```
 
 
 ```{r} 
 ##Load data
 
-raw_df <- read_excel("C:/Users/m_den/OneDrive/Documents/GitHub/64060_-mdenni23/Group 2 Project/EIA923_Schedules_2_3_4_5_M_12_2023_Final.xlsx")
+raw_df <- read_excel("C:/Users/kylej/OneDrive/Documents/BA 64060/Final Project/EIA923_Schedules_2_3_4_5_M_12_2023_Final.xlsx")
 
 ##Isolate the last 6 columns and remove the first 4 rows
 data_raw <- raw_df[-(1:4),]
@@ -38,34 +41,66 @@ head(df_cleaned)
 ```
 
 ```{r}
-##Data preparation and processing
-##Identify relevant numerical columns for clustering.
-##Focus on the 'Quantity Consumed' and 'Net Generation' columns.
-##Select the 'Total Quantity Consumed' columns for Jan-Dec and the 
-##'Electricity Net Generation (MWh)' columns for Jan-Dec.
+##Identify ID columns
+id_vars <- c(
+  "plant_id",
+  "plant_name",
+  "plant_state",
+  "reported_fuel_type_code")
 
-clustering_features_raw <- df_cleaned %>%
-  select(
-    starts_with("quantity_") & !ends_with("label"),
-    starts_with("electricity_net_generation_m_wh_")
-  )
+##Keep only columns listed in ID column vector, i.e., id_vars
+df_ids <- df_cleaned %>%
+  select(any_of(id_vars))
 
-##Convert all selected columns from character type to numeric.
-##Errors will be coerced to NA.
-clustering_data <- clustering_features_raw %>%
-  mutate(across(everything(), ~as.numeric(as.character(.))))
 
-##Handle missing values (NA) by replacing them with 0, 
-##as NA likely means no consumption/generation for that month/plant.
-clustering_data <- clustering_data %>%
-  mutate_all(~replace(., is.na(.), 0))
+##Grab YTD columns (last 6 columns of the data frame) as recommended in directions
+ytd_raw <- df_cleaned %>%
+  select((ncol(.) - 5):ncol(.))
 
-##Scale the data.
-##with large values (like Generation in MWh) don't dominate the clustering 
-##over features with smaller values (like consumption in barrels/tons).
+#See/check names of TYD columns
+names(ytd_raw) 
+
+```
+
+```{r}
+##Convert YTD columns to numeric
+##Anything that cannot be converted will be turned to NA
+ytd_numeric <- ytd_raw %>%
+  mutate(across(everything(), ~ as.numeric(as.character(.))))
+
+##Check NA per column
+na_prop <- sapply(ytd_numeric, function(x) mean(is.na(x)))
+na_prop
+
+
+```
+```{r}
+##Directions are to remove variables with significant missing value, however, the above shows that there are none to remove
+
+##Combine df_ids and ytd_numeric
+df_for_cluster <- bind_cols(df_ids, ytd_numeric)
+
+##This step drops NAs
+df_complete <- df_for_cluster %>%
+  tidyr::drop_na()
+
+##See which rows were dropped for having NA value(s)
+dropped_rows <- df_for_cluster %>%
+  filter(!complete.cases(.))
+
+dropped_rows
+
+```
+```{r}
+##Remove ID columns for clustering
+clustering_data <- df_complete %>%
+  select(-plant_id, -plant_name, -plant_state, -reported_fuel_type_code, -year)
+
+##Scale the numeric YTD columns
 df_scaled <- scale(clustering_data)
 
 ```
+
 
 
 ```{r}
@@ -78,7 +113,7 @@ k_max <- 8
 
 ##Calculate the Within-Cluster Sum of Squares for each K
 wcss <- sapply(1:k_max, function(k){
-  kmeans(df_scaled, centers = k, nstart = 20)$tot.withinss
+  kmeans(df_scaled, centers = k, nstart = 20, iter.max=100)$tot.withinss
 })
 
 ##Visualize the Elbow Plot
@@ -99,76 +134,46 @@ print(elbow_plot)
 ```
 
 ```{r}
+##Double Check: Use silhouette method to determine the number of clusters
+fviz_nbclust(df_scaled, kmeans, method = "silhouette")
+
+```
+
+
+
+```{r}
 ##Perform K-Means Clustering
 
 ##Based on the elbow plot, visually inspecting the bend 3 should be used for k. 
 
 K_FINAL <- 3 
-
+set.seed(123)
 kmeans_result <- kmeans(df_scaled, centers = K_FINAL, nstart = 20)
 
 ##Attach the cluster assignment back to the original cleaned dataframe
-df_clustered <- df_cleaned %>%
+df_clustered <- df_complete %>%
   mutate(cluster = as.factor(kmeans_result$cluster))
-```
 
-```{r}
-##Attach the monthly data and cluster assignment, AND calculate annual sums for summary purposes, since the dedicated annual columns were not found.
-df_clustered <- df_cleaned %>%
-  mutate(
-    cluster = as.factor(kmeans_result$cluster),
-    
-    ##Calculate Annual Net Generation by summing monthly MWh columns
-    calculated_annual_net_gen = rowSums(
-      clustering_data %>% select(starts_with("electricity_net_generation_m_wh_")),
-      na.rm = TRUE
-    ),
-    
-    ##Calculate Annual Quantity Consumed by summing monthly quantity columns
-    calculated_annual_quantity_consumed = rowSums(
-      clustering_data %>% select(starts_with("quantity_")),
-      na.rm = TRUE
-    )
-  )
-```
-
-
-```{r}
-##Look at the size of the clusters
-cat("Cluster Sizes:")
 df_clustered %>%
-  group_by(cluster) %>%
-  summarise(count = n()) %>%
-  print()
-
-# The "problem" usually manifests in:
-# 1. A very small cluster (maybe N=1 or 2) that represents outliers.
-# 2. A cluster with highly unusual characteristics (e.g., high generation 
-#    but very low fuel consumption, which might indicate renewable energy sources, 
-#    or simply bad data/an unusual reporting structure).
+  count(cluster)
 ```
-
 ```{r}
 ##Summarize the key features by cluster to identify what makes them different
-##NOW USING THE CALCULATED ANNUAL COLUMNS
 cluster_summary <- df_clustered %>%
   group_by(cluster) %>%
   summarise(
-    avg_annual_net_gen = mean(calculated_annual_net_gen, na.rm = TRUE),
-    avg_quantity_consumed_annual = mean(calculated_annual_quantity_consumed, na.rm = TRUE),
-    most_common_fuel = names(sort(table(reported_fuel_type_code), decreasing = TRUE))[1],
-    most_common_state = names(sort(table(plant_state), decreasing = TRUE))[1],
-    num_plants = n()
-  ) %>%
-  arrange(num_plants)
+    across(where(is.numeric), ~ mean(.x, na.rm = TRUE), .names = "avg_{.col}"),
+    most_common_fuel  = names(which.max(table(reported_fuel_type_code))),
+    most_common_state = names(which.max(table(plant_state))),
+    n_plants = n(),
+    .groups = "drop"
+  )
 
-print("Cluster Characteristics:")
-print(cluster_summary)
+cluster_summary
 ```
-
 ```{r}
 ##Visualization for identifying outlines/problems
-##Using Principal Component Analysis to reduce the 24 monthly features down to 2 components so we can plot the clusters on a 2D graph.
+##Using Principal Component Analysis to reduce features down to 2 components so we can plot the clusters on a 2D graph.
 pca_result <- prcomp(df_scaled, scale. = FALSE)
 pca_data <- as.data.frame(pca_result$x) %>%
   mutate(cluster = df_clustered$cluster)
@@ -189,7 +194,10 @@ cluster_plot <- pca_data %>%
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 print(cluster_plot)
-
+```
+```{r}
+##Visualization - Cluster plot
+fviz_cluster(kmeans_result, data = df_scaled,) 
 ```
 
 ```{r}
@@ -198,13 +206,23 @@ print(cluster_plot)
 ##The problem is likely found in the smallest cluster.
 ##This cluster contains observations that are statistically distinct from the rest of the data.
 ##Filter the original data to inspect the problematic/unique data points:
-potential_problem_cluster <- cluster_summary$cluster[1]
+
+potential_problem_cluster <- cluster_summary %>%
+  arrange(n_plants) %>%      # sort by size
+  slice(1) %>%               # take the smallest
+  pull(cluster)              # extract the cluster label
 
 problem_data_points <- df_clustered %>%
   filter(cluster == potential_problem_cluster) %>%
-  ##Using the calculated annual columns here
-  select(plant_id, plant_name, plant_state, reported_fuel_type_code, 
-         calculated_annual_net_gen, calculated_annual_quantity_consumed, cluster)
+  select(
+    plant_id,
+    plant_name,
+    plant_state,
+    reported_fuel_type_code,
+    net_generation_megawatthours,
+    total_fuel_consumption_quantity,
+    total_fuel_consumption_mm_btu,
+    cluster)
 
 print(paste("--- Potential Problem/Anomaly Data Points (Cluster", potential_problem_cluster, ") ---"))
 print(problem_data_points)
